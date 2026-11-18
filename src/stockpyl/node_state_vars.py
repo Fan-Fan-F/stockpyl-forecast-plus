@@ -257,6 +257,7 @@ class NodeStateVars(object):
 		self.holding_cost_incurred = 0
 		self.stockout_cost_incurred = 0
 		self.in_transit_holding_cost_incurred = 0
+		self.fixed_cost_incurred = 0
 		self.revenue_earned = 0
 		self.total_cost_incurred = 0
 
@@ -1342,6 +1343,7 @@ class NodeStateVars(object):
 		sv_dict['holding_cost_incurred'] = self.holding_cost_incurred
 		sv_dict['stockout_cost_incurred'] = self.stockout_cost_incurred
 		sv_dict['in_transit_holding_cost_incurred'] = self.in_transit_holding_cost_incurred
+		sv_dict['fixed_cost_incurred'] = getattr(self, 'fixed_cost_incurred', 0)
 		sv_dict['revenue_earned'] = self.revenue_earned
 		sv_dict['total_cost_incurred'] = self.total_cost_incurred
 		sv_dict['demand_cumul'] = self.demand_cumul
@@ -1396,6 +1398,7 @@ class NodeStateVars(object):
 			nsv.holding_cost_incurred = the_dict['holding_cost_incurred']
 			nsv.stockout_cost_incurred = the_dict['stockout_cost_incurred']
 			nsv.in_transit_holding_cost_incurred = the_dict['in_transit_holding_cost_incurred']
+			nsv.fixed_cost_incurred = the_dict.get('fixed_cost_incurred', 0)
 			nsv.revenue_earned = the_dict['revenue_earned']
 			nsv.total_cost_incurred = the_dict['total_cost_incurred']
 			nsv.demand_cumul = the_dict['demand_cumul']
@@ -1517,6 +1520,7 @@ class NodeStateVars(object):
 		if self.holding_cost_incurred != other.holding_cost_incurred: return False
 		if self.stockout_cost_incurred != other.stockout_cost_incurred: return False
 		if self.in_transit_holding_cost_incurred != other.in_transit_holding_cost_incurred: return False
+		if getattr(self, 'fixed_cost_incurred', 0) != getattr(other, 'fixed_cost_incurred', 0): return False
 		if self.revenue_earned != other.revenue_earned: return False
 		if self.total_cost_incurred != other.total_cost_incurred: return False
 		if self.demand_cumul != other.demand_cumul: return False

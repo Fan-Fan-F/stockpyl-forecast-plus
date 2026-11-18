@@ -54,7 +54,7 @@ from stockpyl.helpers import *
 # DemandSource Class
 # ===============================================================================
 
-ALLOWABLE_TYPES = ('N', 'P', 'UD', 'UC', 'NB', 'D', 'CD', None)
+ALLOWABLE_TYPES = ('N', 'P', 'UD', 'UC', 'NB', 'D', 'CD', 'TRACE', None)
 class DemandSource(object):
 	"""
 	A |class_demand_source| object represents external demand observed by a node.
@@ -208,6 +208,8 @@ class DemandSource(object):
 			return self._mean
 		elif self.type in ('UC', 'UD', 'NB', 'CD'):
 			return self.demand_distribution.mean()
+		elif self.type == 'TRACE':
+			return float(np.mean(self.demand_list)) if (self.demand_list is not None and len(self.demand_list) > 0) else None
 		else:
 			return None
 
@@ -225,6 +227,8 @@ class DemandSource(object):
 			return self._standard_deviation
 		elif self.type in ('P', 'UC', 'UD', 'NB', 'CD'):
 			return self.demand_distribution.std()
+		elif self.type == 'TRACE':
+			return float(np.std(self.demand_list)) if (self.demand_list is not None and len(self.demand_list) > 1) else (0.0 if self.demand_list is not None else None)
 		else:
 			return None
 
@@ -368,6 +372,9 @@ class DemandSource(object):
 			else:
 				param_str = "demand_list={}..., probabilities={}...".format(
 					self.demand_list[0:8], self.probabilities[0:8])
+		elif self.type == 'TRACE':
+			cnt = len(self.demand_list) if is_iterable(self.demand_list) else 0
+			param_str = "trace_length={:d}, mean={:.2f}".format(cnt, self.mean or 0.0)
 		else:
 			param_str = ""
 
@@ -434,6 +441,8 @@ class DemandSource(object):
 			if self._probabilities is None: raise AttributeError("For 'CD' (custom discrete) demand, probabilities must be provided")
 			if len(self._demand_list) != len(self._probabilities): raise AttributeError("For 'CD' (custom discrete) demand, demand_list and probabilities must have equal lengths")
 			if np.sum(self._probabilities) != 1: raise AttributeError("For 'CD' (custom discrete) demand, probabilities must sum to 1")
+		elif self.type == 'TRACE':
+			if self._demand_list is None: raise AttributeError("For 'TRACE' demand, demand_list must be provided")
 
 	# CONVERSION TO/FROM DICTS
 
@@ -540,6 +549,8 @@ class DemandSource(object):
 			demand = self._generate_demand_deterministic(period)
 		elif self.type == 'CD':
 			demand = self._generate_demand_custom_discrete()
+		elif self.type == 'TRACE':
+			demand = self._generate_demand_trace(period)
 		else:
 			demand = None
 
@@ -640,6 +651,28 @@ class DemandSource(object):
 
 		"""
 		return np.random.choice(self.demand_list, p=self.probabilities)
+
+	def _generate_demand_trace(self, period=None):
+		"""Generate trace-driven demand by replaying historical observations.
+
+		Parameters
+		----------
+		period : int, optional
+			Simulation period. If None, returns the first demand in the trace.
+			If period exceeds the trace length, cycles cyclically through the trace.
+
+		Returns
+		-------
+		demand : float
+			Historical demand observation.
+		"""
+		if is_iterable(self.demand_list):
+			if len(self.demand_list) == 0:
+				return 0.0
+			if period is None:
+				return float(self.demand_list[0])
+			return float(self.demand_list[period % len(self.demand_list)])
+		return float(self.demand_list) if self.demand_list is not None else 0.0
 
 	# OTHER METHODS
 

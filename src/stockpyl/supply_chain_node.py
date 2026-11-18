@@ -209,6 +209,7 @@ class SupplyChainNode(object):
 		'in_transit_holding_cost': None,
 		'stockout_cost': None,
 		'stockout_cost_function': None,
+		'fixed_cost': None,
 		'revenue': None,
 		'shipment_lead_time': None,
 		'order_lead_time': None,

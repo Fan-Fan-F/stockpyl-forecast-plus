@@ -1105,9 +1105,11 @@ def irwin_hall_cdf(x, n):
 	"""
 
 	F = 0
-	for k in range(int(np.floor(x)) + 1):
-		F += ((-1) ** k) * comb(n, k) * (x - k) ** n
-	F /= factorial(n)
+	x_val = float(np.asarray(x).item()) if (hasattr(x, '__len__') or hasattr(x, 'item')) else float(x)
+	n_int = int(round(float(n)))
+	for k in range(int(np.floor(x_val)) + 1):
+		F += ((-1) ** k) * comb(n_int, k) * (x_val - k) ** n_int
+	F /= factorial(n_int)
 
 	return F
 
@@ -1144,12 +1146,18 @@ def sum_of_continuous_uniforms_distribution(n, lo=0, hi=1):
 		def _cdf(self, x):
 			# P(X <= x) = P(Y <= (y - n * lo) / (hi - lo)), where Y is the sum of
 			# n U[0,1] r.v.s and therefore has an Irwin-Hall distribution.
-			if x < n * lo:
-				return 0
-			elif x > n * hi:
-				return 1
-			else:
-				return irwin_hall_cdf((x - n * lo) / (hi - lo), n)
+			x_arr = np.asarray(x, dtype=float)
+			scalar_input = (x_arr.ndim == 0)
+			x_flat = x_arr.reshape(-1)
+			res = np.empty_like(x_flat)
+			for idx, val in enumerate(x_flat):
+				if val < n * lo:
+					res[idx] = 0.0
+				elif val > n * hi:
+					res[idx] = 1.0
+				else:
+					res[idx] = irwin_hall_cdf((val - n * lo) / (hi - lo), n)
+			return float(res[0]) if scalar_input else res.reshape(x_arr.shape)
 
 	# Check whether n is an integer.
 	if not is_integer(n):

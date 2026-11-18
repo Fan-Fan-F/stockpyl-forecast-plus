@@ -1079,6 +1079,7 @@ def network_from_edges(edges, node_order_in_lists=None, **kwargs):
 		n.stockout_cost = data_dict[n.index].get('stockout_cost')
 		n.stockout_cost_function = data_dict[n.index].get('stockout_cost_function')
 		n.purchase_cost = data_dict[n.index].get('purchase_cost')
+		n.fixed_cost = data_dict[n.index].get('fixed_cost')
 		n.revenue = data_dict[n.index].get('revenue')
 		if data_dict[n.index].get('shipment_lead_time') is not None:
 			n.shipment_lead_time = data_dict[n.index].get('shipment_lead_time')
@@ -1146,20 +1147,30 @@ def network_from_edges(edges, node_order_in_lists=None, **kwargs):
 				dp.disrupted = data_dict[n.index].get('disrupted')
 			n.disruption_process = dp
 
-		#capacity type
-		if data_dict[n.index].get('inventory_capacity_type') is not None:
-			n.inventory_capacity_type = data_dict[n.index]['inventory_capacity_type']
+		# Capacity.
+		if data_dict[n.index].get('inventory_capacity') is not None:
+			inv_cap = data_dict[n.index]['inventory_capacity']
+			if isinstance(inv_cap, InventoryCapacity):
+				n.inventory_capacity = inv_cap
+				n.inventory_capacity_type = inv_cap.inventory_capacity_type
+			else:
+				ic = InventoryCapacity(
+					inventory_capacity=inv_cap,
+					inventory_capacity_type=data_dict[n.index].get('inventory_capacity_type', 'HC'),
+					additional_holding_cost=data_dict[n.index].get('additional_holding_cost')
+				)
+				n.inventory_capacity = ic
+				n.inventory_capacity_type = ic.inventory_capacity_type
+		elif data_dict[n.index].get('inventory_capacity_type') is not None:
+			ic = InventoryCapacity(
+				inventory_capacity_type=data_dict[n.index]['inventory_capacity_type'],
+				additional_holding_cost=data_dict[n.index].get('additional_holding_cost')
+			)
+			n.inventory_capacity = ic
+			n.inventory_capacity_type = ic.inventory_capacity_type
 		else:
-			# Create InventoryCapacity object. 
-			ic = InventoryCapacity()
-			ic.inventory_capacity_type = data_dict[n.index].get('inventory_capacity_type')
-			ic.inventory_capacity = data_dict[n.index].get('inventory_capacity')
-			dp.additional_holding_cost = data_dict[n.index].get('additional_holding_cost')
-			if data_dict[n.index].get('over_capacity') is not None:
-				dp.disrupted = data_dict[n.index].get('over_capacity')
-			if data_dict[n.index].get('shutdown') is not None:
-				dp.disrupted = data_dict[n.index].get('shutdown')
-			n.inventory_capacity_type = ic
+			n.inventory_capacity = None
+			n.inventory_capacity_type = None
 		
 		# Supply type.
 		if not n.predecessors():

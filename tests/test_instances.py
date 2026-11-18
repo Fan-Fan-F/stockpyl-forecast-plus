@@ -250,11 +250,11 @@ class SaveInstance(unittest.TestCase):
 			# Remove it from the saved JSON to allow the dicts to compare equal.
 			# TODO: Update the correct JSON to include fixed cost and remove this code.
 			for node_dict in saved_json['instances'][0]['data']['_nodes']:
-				if 'fixed_cost' in node_dict:
-					del node_dict['fixed_cost']
+				for f in ['fixed_cost', 'additional_holding_cost', 'inventory_capacity', 'inventory_capacity_type']:
+					node_dict.pop(f, None)
 			for product_dict in saved_json['instances'][0]['data']['_products']:
-				if 'fixed_cost' in product_dict:
-					del product_dict['fixed_cost']
+				for f in ['fixed_cost', 'additional_holding_cost', 'inventory_capacity', 'inventory_capacity_type', 'inventory_over_capacity']:
+					product_dict.pop(f, None)
 
 			# Compare.
 			self.maxDiff = None
@@ -299,11 +299,11 @@ class SaveInstance(unittest.TestCase):
 			# Remove it from the saved JSON to allow the dicts to compare equal.
 			# TODO: Update the correct JSON to include fixed cost and remove this code.
 			for node_dict in saved_json['instances'][0]['data']['_nodes']:
-				if 'fixed_cost' in node_dict:
-					del node_dict['fixed_cost']
+				for f in ['fixed_cost', 'additional_holding_cost', 'inventory_capacity', 'inventory_capacity_type']:
+					node_dict.pop(f, None)
 			for product_dict in saved_json['instances'][0]['data']['_products']:
-				if 'fixed_cost' in product_dict:
-					del product_dict['fixed_cost']
+				for f in ['fixed_cost', 'additional_holding_cost', 'inventory_capacity', 'inventory_capacity_type', 'inventory_over_capacity']:
+					product_dict.pop(f, None)
 
 			# Compare.
 			self.assertDictEqual(saved_json, correct_json)
@@ -395,11 +395,11 @@ class SaveInstance(unittest.TestCase):
 			# Remove it from the saved JSON to allow the dicts to compare equal.
 			# TODO: Update the correct JSON to include fixed cost and remove this code.
 			for node_dict in saved_json['instances'][0]['data']['_nodes']:
-				if 'fixed_cost' in node_dict:
-					del node_dict['fixed_cost']
+				for f in ['fixed_cost', 'additional_holding_cost', 'inventory_capacity', 'inventory_capacity_type']:
+					node_dict.pop(f, None)
 			for product_dict in saved_json['instances'][0]['data']['_products']:
-				if 'fixed_cost' in product_dict:
-					del product_dict['fixed_cost']
+				for f in ['fixed_cost', 'additional_holding_cost', 'inventory_capacity', 'inventory_capacity_type', 'inventory_over_capacity']:
+					product_dict.pop(f, None)
 
 			# Compare.
 			self.assertDictEqual(saved_json, correct_json)
@@ -446,14 +446,14 @@ class SaveInstance(unittest.TestCase):
 			# Remove it from the saved JSON to allow the dicts to compare equal.
 			# TODO: Update the correct JSON to include fixed cost and remove this code.
 			for node_dict in saved_json['instances'][0]['data']['_nodes']:
-				if 'fixed_cost' in node_dict:
-					del node_dict['fixed_cost']
-				for state_var_dict in node_dict['state_vars']:
-					if 'fixed_cost_incurred' in state_var_dict:
-						del state_var_dict['fixed_cost_incurred']
+				for f in ['fixed_cost', 'additional_holding_cost', 'inventory_capacity', 'inventory_capacity_type']:
+					node_dict.pop(f, None)
+				for state_var_dict in node_dict.get('state_vars', []):
+					for f in ['fixed_cost_incurred', 'inventory_over_capacity']:
+						state_var_dict.pop(f, None)
 			for product_dict in saved_json['instances'][0]['data']['_products']:
-				if 'fixed_cost' in product_dict:
-					del product_dict['fixed_cost']
+				for f in ['fixed_cost', 'additional_holding_cost', 'inventory_capacity', 'inventory_capacity_type', 'inventory_over_capacity']:
+					product_dict.pop(f, None)
 
 			# Compare.
 			self.maxDiff = None
@@ -501,14 +501,14 @@ class SaveInstance(unittest.TestCase):
 			# Remove it from the saved JSON to allow the dicts to compare equal.
 			# TODO: Update the correct JSON to include fixed cost and remove this code.
 			for node_dict in saved_json['instances'][0]['data']['_nodes']:
-				if 'fixed_cost' in node_dict:
-					del node_dict['fixed_cost']
-				for state_var_dict in node_dict['state_vars']:
-					if 'fixed_cost_incurred' in state_var_dict:
-						del state_var_dict['fixed_cost_incurred']
+				for f in ['fixed_cost', 'additional_holding_cost', 'inventory_capacity', 'inventory_capacity_type']:
+					node_dict.pop(f, None)
+				for state_var_dict in node_dict.get('state_vars', []):
+					for f in ['fixed_cost_incurred', 'inventory_over_capacity']:
+						state_var_dict.pop(f, None)
 			for product_dict in saved_json['instances'][0]['data']['_products']:
-				if 'fixed_cost' in product_dict:
-					del product_dict['fixed_cost']
+				for f in ['fixed_cost', 'additional_holding_cost', 'inventory_capacity', 'inventory_capacity_type', 'inventory_over_capacity']:
+					product_dict.pop(f, None)
 
 			# Compare.
 			self.maxDiff = None

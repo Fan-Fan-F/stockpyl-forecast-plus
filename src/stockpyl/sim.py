@@ -760,8 +760,8 @@ def _calculate_period_costs(network, period):
 												float(np.sum([n.state_vars[period].outbound_shipment[s_index][prod_index] \
 																for s_index in n.successor_indices(include_external=True)]))
 		
-			#fixed cost.
-			fixed_cost = n.fixed_cost or 0
+			# Fixed cost.
+			fixed_cost = getattr(n, 'fixed_cost', None) or 0
 			order_qty = 0
 			if fixed_cost > 0:
 				order_qty = sum(qty 

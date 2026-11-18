@@ -208,6 +208,7 @@ class SupplyChainProduct(object):
 		'in_transit_holding_cost': None,
 		'stockout_cost': None,
 		'stockout_cost_function': None,
+		'fixed_cost': None,
 		'revenue': None,
 		'shipment_lead_time': None,
 		'order_lead_time': None,
@@ -526,7 +527,7 @@ class SupplyChainProduct(object):
 						viol_attr = attr
 						eq = False
 				elif attr in ('local_holding_cost', 'echelon_holding_cost', 'in_transit_holding_cost', \
-							  'stockout_cost', 'revenue', 'initial_inventory_level', 'initial_orders',
+							  'stockout_cost', 'fixed_cost', 'revenue', 'initial_inventory_level', 'initial_orders',
 							  'initial_shipments', 'order_capacity'):
 					# These attributes need approximate comparisons.
 					if not isclose(getattr(self, attr) or 0, getattr(other, attr) or 0, rel_tol=rel_tol):
